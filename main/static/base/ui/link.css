@@ -1,0 +1,36 @@
+.ui-link {
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    color: rgb(var(--accent-color));
+    text-decoration: none;
+    transition: 50ms ease-out;
+}
+
+.ui-link:active {
+    transform: scale(0.95);
+}
+
+.ui-link > img {
+    height: 1em;
+}
+
+.ui-link > *:not(:last-child) {
+    margin-right: 0.5em;
+}
+
+.ui-link::before {
+    content: '';
+    position: absolute;
+    height: 1px;
+    width: 0%;
+    bottom: 0px;
+    left: 0px;
+    background-color: rgb(var(--accent-color));
+    transition: 0.1s ease-out;
+}
+
+.ui-link:hover::before {
+    width: 100%;
+}

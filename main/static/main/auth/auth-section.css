@@ -1,0 +1,96 @@
+#auth-section {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+    background: radial-gradient(at center top, rgba(190, 160, 255, 0.4), rgba(var(--accent-color), 0.4) 70%);
+    overflow-y: scroll;
+}
+
+#auth-section::-webkit-scrollbar {
+    width: 6px;
+    background-color: transparent;
+}
+
+#auth-section::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--text-color), 0.3);
+    border-radius: 3px;
+}
+
+#futter {
+    display: none;
+}
+
+/* Ring */
+
+.auth-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.auth-ring::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(50 * var(--ratio));
+    height: calc(50 * var(--ratio));
+    border-radius: 50%;
+    border: 10px solid white;
+    opacity: 0.1;
+    animation: animate-ring 8s ease-in-out infinite;
+}
+
+/* Form */
+
+#auth-section > .form {
+    z-index: 2;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    height: fit-content;
+    padding: 3em;
+    margin: 4em 0 2em 0;
+    background-color: rgba(var(--main-color), 0.8);
+    border: 1px solid rgba(var(--text-color), 0.03);
+    border-radius: 2em;
+    box-shadow: 0px 10px 15px rgba(var(--main-color), 0.2);
+}
+
+#auth-section > .form > b {
+    font-size: 1.5em;
+    margin-bottom: 0.5em;
+    text-transform: uppercase;
+}
+
+#auth-section > .form > span {
+    opacity: 0.6;
+    font-size: 0.7em;
+    align-self: flex-start;
+    margin: 2em 0 0.5em 1em;
+}
+
+#auth-section > .form > .ui-button {
+    margin: 2em 0 1em 0;
+    padding: 0.3em 2em;
+}
+
+#auth-section > .form > .ui-link {
+    font-size: 0.7em;
+}
+
+#auth-section > .form.active {
+    display: flex;
+}
+
+.auth-register-login_link > img {
+    transform: rotate(180deg);
+}
+
+@keyframes animate-ring {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(0.95); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+}

@@ -1,0 +1,57 @@
+{% extends "main/layout.html" %}
+
+{% load static %}
+
+{% block imports %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/faq/faq-section.css' %}">
+<script src="{% static 'main/faq/faq.js' %}"></script>
+{% endblock %}
+
+{% block title %}
+MobileWorld
+{% endblock %}
+
+{% block content %}
+<section id="faq-section">
+    <b>{{labels.do_you_have_a_question}}</b>
+
+    <div class="faq-questions-category">
+        <img src="{% static 'icons/cart.svg' %}">
+        <div>
+            <b class="faq-question-capture">{{labels.purchase}}</b>
+            {% for question in shop_questions %}
+            <div class="faq-question-block">
+                <div class="faq-question"><b>+</b> {{ question.question }}</div>
+                <div class="faq-response">{{ question.responce }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="faq-questions-category">
+        <img src="{% static 'icons/deliver.svg' %}">
+        <div>
+            <b class="faq-question-capture">{{labels.deliver}}</b>
+            {% for question in deliver_questions %}
+            <div class="faq-question-block">
+                <div class="faq-question"><b>+</b> {{ question.question }}</div>
+                <div class="faq-response">{{ question.responce }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="faq-questions-category">
+        <img src="{% static 'icons/other.svg' %}">
+        <div>
+            <b class="faq-question-capture">{{labels.other}}</b>
+            {% for question in other_questions %}
+            <div class="faq-question-block">
+                <div class="faq-question"><b>+</b> {{ question.question }}</div>
+                <div class="faq-response">{{ question.responce }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

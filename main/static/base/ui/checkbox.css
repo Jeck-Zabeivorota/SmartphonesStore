@@ -1,0 +1,36 @@
+.ui-checkbox {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    cursor: pointer;
+}
+
+.ui-checkbox > input {
+    display: none;
+}
+
+.ui-checkbox > div {
+    position: relative;
+    width: 0.8em;
+    height: 0.8em;
+    margin-right: 0.5em;
+}
+
+.ui-checkbox > div::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgba(var(--text-color), 0.1);
+    transition: 0.2s ease-out;
+}
+
+.ui-checkbox > input:checked ~ div::before {
+    border: 2px solid rgb(var(--accent-color));
+    width: calc(0.6em - 4px);
+    height: calc(0.6em - 4px);
+}

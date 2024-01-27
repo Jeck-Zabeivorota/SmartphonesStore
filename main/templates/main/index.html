@@ -1,0 +1,114 @@
+{% extends "main/layout.html" %}
+
+{% load static %}
+
+{% block imports %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/parts_product/product.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'main/home/hero-section.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'main/home/products-section.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'main/home/advantages-section.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'main/home/about-section.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'base/ui/toggler.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'base/ui/viewport.css' %}">
+<script src="{% static 'main/home/home.js' %}"></script>
+<script src="{% static 'main/parts_product/product.js' %}"></script>
+{% endblock %}
+
+{% block title %}
+MobileWorld
+{% endblock %}
+
+{% block content %}
+<section id="hero-section">
+    <div class="hero-photo-wrap pos-center">
+        <img src="{% static 'img/hero_phone.png' %}">
+    </div>
+    <span class="hero-first-capture">{{labels.hero1}}<span class="hero-accent">{{labels.hero2}}</span>{{labels.hero3}}</span>
+    <span class="hero-second-capture"><b>{{labels.hero4}}</b></span>
+    <div class="hero-big-ring pos-center" style="--ring-size: 50;"></div>
+
+    <div class="hero-ring pos-center hero-accent" style="--ring-size: 3.5; --ring-top: 25%; --ring-left: 30%;"></div>
+    <div class="hero-ring pos-center up-down-animation" style="--ring-size: 2.5; --ring-top: 30%; --ring-left: 75%;"></div>
+    <div class="hero-ring pos-center left-top-animation" style="--ring-size: 1.5; --ring-top: 70%; --ring-left: 32%;"></div>
+
+    <span class="hero-plus pos-center" style="--plus-size: 3.5; --plus-top: 18%; --plus-left: 45%;">+</span>
+    <span class="hero-plus pos-center rotation-animation hero-accent" style="--plus-size: 2.5; --plus-top: 65%; --plus-left: 70%;">+</span>
+    <span class="hero-plus pos-center hero-accent" style="--plus-size: 1.5; --plus-top: 80%; --plus-left: 57%;">+</span>
+</section>
+
+<section id="products-section">
+    <div class="products-title"><b>{{labels.top_products}}</b></div>
+    
+    <div class="products-actions">
+        <div class="ui-toggler">
+            <span class="products-tab-new active">{{labels.new}}</span>
+            <span class="products-tab-discount">{{labels.discount}}</span>
+        </div>
+
+        <a href="{% url 'products' %}" class="ui-link">
+            <span>{{labels.more_products}}</span>
+            <img src="{% static 'icons/arrow_right.svg' %}">
+        </a>
+    </div>
+
+    <div class="products-new ui-viewport active">
+        <div>
+            {% for product in new_products %}
+            {% include 'main/parts/product.html' %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="products-discount ui-viewport">
+        <div>
+            {% for product in discount_products %}
+            {% include 'main/parts/product.html' %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section id="advant-section">
+    <div class="advant-title"><b>{{labels.why_we}}</b></div>
+    <div class="advant-container">
+        <div class="advant-block">
+            <img src="{% static 'icons/smile_sient.svg' %}">
+            <div></div>
+            <b>5000 <span>+</span></b>
+            <span>{{labels.sells}}</span>
+        </div>
+
+        <div class="advant-block">
+            <img src="{% static 'icons/time.svg' %}">
+            <div></div>
+            <b>6 <span>+</span></b>
+            <span>{{labels.time}}</span>
+        </div>
+
+        <div class="advant-block">
+            <img src="{% static 'icons/walk_sient.svg' %}">
+            <div></div>
+            <b>57% <span>+</span></b>
+            <span>{{labels.return}}</span>
+        </div>
+    </div>
+</section>
+
+<section id="about-section">
+    <div class="about-title"><b>{{labels.about_us}}</b></div>
+    <div class="about-container">
+        <img src="{% static 'icons/team.svg' %}">
+        <span>
+            {{labels.about_us_desc1}}
+            <p>{{labels.about_us_desc2}}</p>
+        </span>
+    </div>
+</section>
+
+<script>
+    const PRODUCT_PATH     = "{% url 'product' %}",
+          API_PRODUCT_PATH = "{% url 'api_product' %}",
+          AUTH_PATH        = "{% url 'auth' %}",
+          CART_PATH        = "{% url 'cart' %}";
+</script>
+{% endblock %}

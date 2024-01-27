@@ -1,0 +1,124 @@
+#main-section {
+    display: flex;
+    padding: 5em 3vw 0 3vw;
+    min-height: 70vh;
+}
+
+#items-section {
+    flex: 1;
+}
+
+/* Side menu */
+
+#sidemenu-section {
+    position: sticky;
+    top: 5em;
+    height: fit-content;
+    padding-left: 1em;
+    margin-right: 5vw;
+}
+
+#sidemenu-section > a {
+    display: block;
+    width: fit-content;
+    position: relative;
+    font-size: 1.2em;
+    margin-bottom: 0.5em;
+    color: rgb(var(--text-color));
+    text-decoration: none;
+    transition: 0.2s ease-out;
+}
+
+#sidemenu-section > a:hover {
+    opacity: 0.7;
+}
+
+#sidemenu-section > a:active {
+    transition: 50ms ease-out;
+    transform: scale(0.95);
+}
+
+#sidemenu-section > a::before {
+    content: '';
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: -15px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: rgb(var(--accent-color));
+    transform: translate(-50%, -50%);
+}
+
+#sidemenu-section > a.active {
+    color: rgb(var(--accent-color));
+}
+
+#sidemenu-section > a.active::before {
+    display: block;
+}
+
+/* Actions */
+
+.panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1em;
+}
+
+.panel-title {
+    display: inline-block;
+    margin-right: 0.5em;
+    font-size: 1.5em;
+}
+
+.panel-count, .panel-actions-selected {
+    font-size: 0.8em;
+    color: rgba(var(--text-color), 0.7);
+}
+
+.panel-actions {
+    display: none;
+}
+
+.panel-actions.active {
+    display: flex;
+}
+
+.panel-actions > *:not(:last-child) {
+    margin-right: 1em;
+}
+
+/* Capture */
+
+.not_found_capture {
+    display: none;
+    margin-top: 3em;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: rgba(var(--text-color), 0.7);
+}
+
+.not_found_capture.active {
+    display: block;
+}
+
+@media (max-width: 800px) {
+    #sidemenu-section {
+        display: none;
+    }
+}
+
+@media (max-width: 500px) {
+    .panel {
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .panel-actions {
+        margin-top: 1em;
+    }
+}

@@ -1,0 +1,91 @@
+{% extends "main/layout.html" %}
+
+{% load static %}
+
+{% block imports %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/account pages/account.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'main/user_info/info-section.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'base/ui/textfield.css' %}">
+<script src="{% static 'main/user_info/user_info.js' %}"></script>
+{% endblock %}
+
+{% block title %}
+MobileWorld
+{% endblock %}
+
+{% block content %}
+<section id="main-section">
+    {% include 'main/parts/sidemenu.html' %}
+
+    <section id="info-section">
+        <b>{{sidemenu_labels.info}}</b>
+        <div class="form">
+            <b>{{labels.user_data}}</b>
+            <table>
+                <tr>
+                    <td><div class="info-capture">{{labels.name}}:</div></td>
+                    <td><input type="text" id="name_field" class="ui-textfield"
+                        minlength="3" maxlength="20" value="{{fields_data.name}}"></td>
+                </tr>
+                <tr>
+                    <td><div class="info-capture">{{labels.email}}:</div></td>
+                    <td><input type="email" id="email_field" class="ui-textfield" value="{{fields_data.email}}"></td>
+                </tr>
+                <tr>
+                    <td><div class="info-capture">{{labels.phone}}:</div></td>
+                    <td><input type="text" id="phone_field" class="ui-textfield"
+                        minlength="7" maxlength="12" value="{{fields_data.phone}}"></td>
+                </tr>
+            </table>
+            <div id="info_submit" class="ui-button">{{labels.save_data}}</div>
+        </div>
+
+        <div class="form">
+            <b>{{labels.password}}</b>
+            <table>
+                <tr>
+                    <td><div class="info-capture">{{labels.current_password}}:</div></td>
+                    <td><input type="password" id="curr_pass_field" class="ui-textfield"
+                        minlength="6" maxlength="100"></td>
+                </tr>
+                <tr>
+                    <td><div class="info-capture">{{labels.new_password}}:</div></td>
+                    <td><input type="password" id="new_pass_field" class="ui-textfield"
+                        minlength="6" maxlength="100"></td>
+                </tr>
+                <tr>
+                    <td><div class="info-capture">{{labels.repeat_password}}:</div></td>
+                    <td><input type="password" id="repeat_pass_field" class="ui-textfield"
+                        minlength="6" maxlength="100"></td>
+                </tr>
+            </table>
+            <div id="password_submit" class="ui-button">{{labels.save_password}}</div>
+        </div>
+
+        <div class="form">
+            <b>{{labels.address}}</b>
+            <table>
+                <tr>
+                    <td><div class="info-capture">{{labels.city}}:</div></td>
+                    <td><input type="text" id="city_field" class="ui-textfield"
+                        minlength="3" value="{{fields_data.city}}"></td>
+                </tr>
+                <tr>
+                    <td><div class="info-capture">{{labels.street}}:</div></td>
+                    <td><input type="text" id="street_field" class="ui-textfield"
+                        minlength="3" value="{{fields_data.street}}"></td>
+                </tr>
+                <tr>
+                    <td><div class="info-capture">{{labels.index}}:</div></td>
+                    <td><input type="text" id="index_field" class="ui-textfield" value="{{fields_data.index}}"></td>
+                </tr>
+            </table>
+            <div id="address_submit" class="ui-button">{{labels.save_address}}</div>
+        </div>
+    </section>
+</section>
+
+<script>
+    const API_USERDATA_PATH = "{% url 'api_user_data' %}";
+</script>
+{% endblock %}

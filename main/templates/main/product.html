@@ -1,0 +1,142 @@
+{% extends "main/layout.html" %}
+
+{% load static %}
+
+{% block imports %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/parts_product/product.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'main/product/other.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'main/product/photos-section.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'main/product/panel-section.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'base/ui/viewport.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'base/ui/counter.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'base/ui/chip.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'base/ui/textfield.css' %}">
+<script src="{% static 'main/product/product.js' %}"></script>
+<script src="{% static 'main/parts_product/product.js' %}"></script>
+{% endblock %}
+
+{% block title %}
+{{ product.name }}
+{% endblock %}
+
+{% block content %}
+<section id="main-section">
+    <section id="photos-section">
+        <img class="photos-main_photo" src="{{ product.main_photo }}">
+        <div class="ui-viewport">
+            <div>
+                {% for photo in photos %}
+                <img class="photos-photo" src="{{ photo }}">
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section id="panel-section">
+        <b class="panel-name">{{ product.name }}</b>
+        <div class="panel-rating">
+            <div></div>
+            <span>{{product.get_rating}}/5 <span>({{feedbacks_count}} {{labels.feedbacks_title}})</span></span>
+        </div>
+
+        <span>{{labels.color}}</span>
+        <div class="panel-colors">
+            {% for color in colors %}
+            <div style="--color: #{{color}};" data-value="{{color}}"></div>
+            {% endfor %}
+        </div>
+
+        <span>{{labels.quantity}}<span class="panel-quantity-all_quantity">({{product.quantity}} {{labels.items_title}})</span></span>
+        <div class="panel-quantity">
+            <div class="ui-counter">
+                <span class="ui-counter-decrement">-</span>
+                <input type="text" class="ui-counter-value" value="1">
+                <span class="ui-counter-increment">+</span>
+            </div>
+            <div class="panel-spacer"></div>
+            <div class="panel-quantity-price_block">
+                <span class="panel-quantity-equals">=</span>
+                {% if product.discount == 0 %}
+                <b class="panel-quantity-price">{{product.get_price}} $</b>
+                {% else %}
+                <b class="panel-quantity-price">{{product.get_discount_price}} $</b>
+                <span class="panel-quantity-old_price"><span>{{product.get_price}} $</span> ({{product.get_discount}})</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="panel-actions">
+            <div>
+                <div class="panel-actions-cart ui-flatbutton">{{labels.add_to_cart}}</div>
+                <div class="panel-spacer"></div>
+                <div class="panel-actions-order ui-button">{{labels.order_now}}</div>
+            </div>
+            {% if product.is_favorite %}
+            <img class="panel-actions-favorite active" src="{% static 'icons/favorite_active.svg' %}" alt="Favorite">
+            {% else %}
+            <img class="panel-actions-favorite" src="{% static 'icons/favorite.svg' %}" alt="Favorite">
+            {% endif %}
+        </div>
+
+        <div class="panel-tabs">
+            <div id="characters-tab" class="ui-chip active">{{labels.characters}}</div>
+            <div id="feedback-tab" class="ui-chip">{{labels.feedbacks}}</div>
+        </div>
+
+        <section id="characters-section" class="panel-tabview active">
+            {% for category, params in characteristic.items %}
+                <b class="character-category">{{ category }}</b>
+                {% for name, value in params.items %}
+                    {% if value %}
+                    <div class="character-field">
+                        <span>{{ name }}</span>
+                        <div></div>
+                        <span>{{ value|safe }}</span>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+            <div class="character-field">
+                <span>{{labels.date_of_issue}}</span>
+                <div></div>
+                <span>{{product.get_date_of_issue}}</span>
+            </div>
+        </section>
+
+        <section id="feedback-section" class="panel-tabview">
+            {% if user.is_authenticated %}
+            <div class="feedback-form">
+                <b>{{labels.my_feedback}}</b>
+                <div class="feedback-form-rating"></div>
+                <textarea class="feedback-form-desc ui-textfield" rows="4">{{user_feedback.description}}</textarea>
+                <input type="button" class="feedback-form-save ui-flatbutton" value="{{labels.save_feedback}}">
+            </div>
+            {% endif %}
+            <div class="feedback-capture {% if feedbacks_count == 0 %}active{% endif %}">{{labels.no_feedbacks}}</div>
+            {% for feedback in feedbacks %}
+            <div class="feedback-block">
+                <b>{% if feedback.user__name %}{{feedback.user__name}}{% else %}({{labels.unknowlange}}){% endif %}</b>
+                <span>{{ feedback.description }}</span>
+                <div class="feedback-rating">
+                    {% for _ in "x"|rjust:feedback.rating %}
+                    <img src="{% static 'icons/star.svg' %}">
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+    </section>
+</section>
+
+<script>
+    const PRODUCT_ID        = parseFloat('{{product.id}}'),
+          PRODUCT_PRICE     = parseFloat('{{product.get_price}}'),
+          PRODUCT_DISCOUNT  = parseFloat('{{product.discount}}'.replace(',', '.')),
+          PRODUCT_RATING    = parseFloat('{{product.get_rating}}'),
+          PRODUCT_QUANTITY  = parseInt('{{product.quantity}}'),
+          API_PRODUCT_PATH  = "{% url 'api_product' %}",
+          API_FEEDBACK_PATH = "{% url 'api_feedback' %}",
+          AUTH_PATH         = "{% url 'auth' %}";
+    let user_rating = parseInt('{{user_feedback.rating}}');
+</script>
+{% endblock %}

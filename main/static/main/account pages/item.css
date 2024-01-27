@@ -1,0 +1,143 @@
+.item {
+    display: flex;
+    padding: 2em 0;
+}
+
+.item:not(:last-child) {
+    border-bottom: 1px solid rgba(var(--text-color), 0.03);
+}
+
+.item-selector {
+    position: relative;
+    width: 1em;
+    height: 1em;
+    cursor: pointer;
+}
+
+.item-selector::before {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(var(--text-color), 0.1);
+    width: 1em;
+    height: 1em;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: 0.2s ease-out;
+}
+
+.item.active > .item-selector::before {
+    border: 3px solid rgb(var(--accent-color));
+    width: calc(1em - 6px);
+    height: calc(1em - 6px);
+}
+
+.item > img {
+    height: 8em;
+    margin: 0 1em;
+    cursor: pointer;
+}
+
+.item-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+}
+
+.item-content-first_block {
+    display: flex;
+    justify-content: space-between;
+}
+
+.item-content-second_block {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: end;
+    margin-top: 2em;
+}
+
+.item-name {
+    cursor: pointer;
+}
+
+.item-product_color {
+    display: flex;
+    align-items: center;
+    margin-top: 0.7em;
+}
+
+.item-product_color > div {
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    border: 1px solid rgba(var(--text-color), 0.03);
+    background-color: var(--color);
+}
+
+.item-product_color > span {
+    margin-right: 0.5em;
+    font-size: 0.8em;
+    color: rgba(var(--text-color), 0.7);
+}
+
+.item-price > span {
+    display: inline-block;
+    margin-left: 0.5em;
+    color: rgba(var(--text-color), 0.7);
+}
+
+.item-datetime {
+    font-size: 0.8em;
+    text-align: end;
+    color: rgba(var(--text-color), 0.7);
+}
+
+.item-datetime > span {
+    display: inline-block;
+    margin-right: 0.5em;
+    color: rgb(var(--text-color));
+}
+
+.item-actions {
+    display: flex;
+    align-self: end;
+}
+
+.item-actions > *:not(:last-child) {
+    margin-right: 1em;
+}
+
+.item-actions-cancel.hide, .item-actions-delete.hide {
+    display: none;
+}
+
+.item-status > b {
+    color: rgb(var(--color));
+}
+
+@media (max-width: 500px) {
+    .item-content-first_block {
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .item-content-second_block {
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .item-price {
+        margin-top: 0.5em;
+    }
+
+    .item-datetime > span {
+        display: none;
+    }
+
+    .item-actions {
+        margin-top: 1em;
+    }
+}

@@ -1,0 +1,14 @@
+.ui-textfield {
+    border-radius: 2em;
+    border: 1px solid rgba(var(--text-color), 0.1);
+    background-color: rgba(var(--text-color), 0.01);
+    outline: none;
+    font-size: 1em;
+    font-family: Ubuntu, Arial, Helvetica, sans-serif;
+    padding: 0.5em 1em;
+    transition: 0.2s ease-out;
+}
+
+.ui-textfield:focus {
+    border-color: rgba(var(--accent-color), 0.4);
+}

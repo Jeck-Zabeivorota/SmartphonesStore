@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ua">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'base/base.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'base/menu.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'base/msg.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'base/futter.css' %}">
+    
+    <link rel="stylesheet" type="text/css" href="{% static 'base/ui/link.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'base/ui/buttons.css' %}">
+
+    <script src="{% static 'base/base.js' %}"></script>
+    <script src="{% static 'base/menu.js' %}"></script>
+
+    {% block imports %}
+    {% endblock %}
+
+    <title>
+        {% block title %}
+        {% endblock %}
+    </title>
+</head>
+<body>
+    <header>
+        <div class="menu-background"></div>
+        <div id="menu">
+            <div class="menu-logo">
+                <img src="{% static 'icons/logo_black.svg' %}">
+                <b>Mobile World</b>
+            </div>
+            <div class="menu-items_block">
+                <a href="{% url 'home' %}" class="{% if active_menu_item == 'Home' %}active{% endif %}">{{layout_labels.home}}</a>
+                <a href="{% url 'products' %}" class="{% if active_menu_item == 'Products' %}active{% endif %}">{{layout_labels.products}}</a>
+                <a href="{% url 'faq' %}" class="{% if active_menu_item == 'FAQ' %}active{% endif %}">{{layout_labels.faq}}</a>
+            </div>
+            <div class="menu-items_block">
+                <img class="menu-search" src="{% static 'icons/search.svg' %}">
+                <div class="menu-lang">
+                    <img src="
+                    {% if layout_labels.lang == 'en' %}
+                    {% static 'icons/en.svg' %}
+                    {% else %}
+                    {% static 'icons/ua.svg' %}
+                    {% endif %}
+                    " alt="Language">
+                    <div class="submenu">
+                        <img class="lang" src="{% static 'icons/en.svg' %}" data-lang="en">
+                        <img class="lang" src="{% static 'icons/ua.svg' %}" data-lang="ua">
+                    </div>
+                </div>
+                <div class="{% if active_menu_item == 'Account' %}active{% endif %}">
+                    <a href="{% url 'user_info' %}"><img src="{% static 'icons/user.svg' %}"></a>
+                    {% if user.is_authenticated %}
+                    <div class="submenu">
+                        <a href="{% url 'user_info' %}">{{layout_labels.account}}</a>
+                        <a href="{% url 'orders' %}">{{layout_labels.orders}}</a>
+                        <a href="{% url 'favorites' %}">{{layout_labels.favorites}}</a>
+                        <a href="{% url 'browsed_products' %}">{{layout_labels.browsed}}</a>
+                        <a href="{% url 'auth_logout' %}" class="menu-exit">{{layout_labels.exit}}</a>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if user.is_authenticated %}
+                <a href="{% url 'cart' %}" class="{% if active_menu_item == 'Cart' %}active{% endif %}">
+                    <img src="{% static 'icons/cart.svg' %}">
+                    <div class="menu-cart-products_count {% if products_in_cart_count > 0 %}active{% endif %}">
+                        {{ products_in_cart_count }}
+                    </div>
+                </a>
+                {% endif %}
+            </div>
+            <div class="menu-mobil_items_block">
+                <img class="menu-mobil-search" src="{% static 'icons/search.svg' %}">
+                <img class="menu-mobil-menu" src="{% static 'icons/menu.svg' %}">
+            </div>
+        </div>
+        <div id="search_block">
+            <input type="text" class="search_block-field">
+            <img class="search_block-search" src="{% static 'icons/search.svg' %}">
+            <img class="search_block-close" src="{% static 'icons/close_black.svg' %}">
+        </div>
+        <div id="mobil_menu_block">
+            <a class="mobil_menu_block-item" href="{% url 'home' %}">{{layout_labels.home}}</a>
+            <a class="mobil_menu_block-item" href="{% url 'products' %}">{{layout_labels.products}}</a>
+            <a class="mobil_menu_block-item" href="{% url 'faq' %}">{{layout_labels.faq}}</a>
+            <div class="mobil_menu_block-lang">
+                <img class="mobil_menu_block-item lang {% if layout_labels.lang == 'en' %}active{% endif %}"
+                     src="{% static 'icons/en.svg' %}" data-lang="en">
+                <img class="mobil_menu_block-item lang {% if layout_labels.lang == 'ua' %}active{% endif %}"
+                     src="{% static 'icons/ua.svg' %}" data-lang="ua">
+            </div>
+            <br>
+            {% if user.is_authenticated %}
+            <a class="mobil_menu_block-item" href="{% url 'user_info' %}">{{layout_labels.account}}</a>
+            <a class="mobil_menu_block-item" href="{% url 'cart' %}">{{layout_labels.cart}}</a>
+            <a class="mobil_menu_block-item" href="{% url 'orders' %}">{{layout_labels.orders}}</a>
+            <a class="mobil_menu_block-item" href="{% url 'favorites' %}">{{layout_labels.favorites}}</a>
+            <a class="mobil_menu_block-item" href="{% url 'browsed_products' %}">{{layout_labels.browsed}}</a>
+            <a class="mobil_menu_block-item" href="{% url 'auth_logout' %}" class="menu-exit">{{layout_labels.exit}}</a>
+            {% else %}
+            <a class="mobil_menu_block-item" href="{% url 'auth' %}">{{layout_labels.sing_in}}</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div id="msg" {% if msg %}class="active" style="--color: {{ msg.color }};"{% endif %}>
+        <span class="msg-content">{% if msg %}{{ msg.content }}{% endif %}</span>
+        <img class="msg-close_button ui-imgbutton" src="{% static 'icons/close_white.svg' %}">
+    </div>
+
+    {% block content %}
+    {% endblock %}
+
+    <section id="futter">
+        <div class="futter-first_block">
+            <div class="futter-logo">
+                <img src="{% static 'icons/logo_white.svg' %}">
+                <span><b>MobileWorld</b></span>
+            </div>
+            <span class="futter-copyright">© 2020 - 2023 enthernet store «Mobil world» — mobilworld.com.ua</span>
+        </div>
+        <div class="futter-second_block">
+            <div class="futter-block">
+                <b>{{layout_labels.questions}}</b>
+                <a class="ui-link" href="{% url 'faq' %}">{{layout_labels.question1}}</a>
+                <a class="ui-link" href="{% url 'faq' %}">{{layout_labels.question2}}</a>
+                <a class="ui-link" href="{% url 'faq' %}">{{layout_labels.question3}}</a>
+            </div>
+            <div class="futter-block">
+                <b>{{layout_labels.contacts}}</b>
+                <a class="ui-link" href="#">Telegram</a>
+                <a class="ui-link" href="#">Viber</a>
+                <a class="ui-link" href="#">Whatup</a>
+            </div>
+        </div>
+    </section>
+    {% csrf_token %}
+</body>
+<script>
+    const PRODUCTS_PATH = "{% url 'products' %}";
+    const API_LANG_PATH = "{% url 'api_lang' %}",
+          LANG          = "{{layout_labels.lang}}";
+
+    function getIcon(fileName) {
+        return "{% static 'icons' %}".concat('/', fileName);
+    }
+</script>
+</html>

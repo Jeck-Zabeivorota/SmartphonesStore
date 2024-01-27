@@ -1,0 +1,24 @@
+.ui-viewport {
+    display: flex;
+    margin: 0em 3vw 2em 3vw;
+    padding: 2em 0;
+    overflow-x: scroll;
+}
+
+.ui-viewport::-webkit-scrollbar {
+    height: 6px;
+    background-color: transparent;
+}
+
+.ui-viewport::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--text-color), 0.3);
+    border-radius: 3px;
+}
+
+.ui-viewport > div {
+    display: inline-flex;
+}
+
+.ui-viewport > div > * {
+    margin: 0 1em;
+}

@@ -1,0 +1,65 @@
+{% extends "main/layout.html" %}
+
+{% load static %}
+
+{% block imports %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/auth/auth-section.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'base/ui/textfield.css' %}">
+<script src="{% static 'main/auth/auth.js' %}"></script>
+{% endblock %}
+
+{% block title %}
+MobileWorld
+{% endblock %}
+
+{% block content %}
+<section id="auth-section">
+    <div class="auth-ring"></div>
+    <div class="auth-login form active">
+        <b>{{labels.login}}</b>
+        
+        <span>{{labels.email}}</span>
+        <input type="text" class="email_field ui-textfield">
+
+        <span>{{labels.password}}</span>
+        <input type="password" class="password_field ui-textfield" minlength="6" maxlength="100">
+
+        <div class="auth-login-submit ui-button">{{labels.login}}</div>
+
+        <div class="auth-login-register_link ui-link">
+            <span>{{labels.register}}</span>
+            <img src="{% static 'icons/arrow_right.svg' %}">
+        </div>
+    </div>
+    <div class="auth-register form">
+        <b>{{labels.register}}</b>
+
+        <span>{{labels.name}}</span>
+        <input type="text" class="name_field ui-textfield" minlength="3" maxlength="20">
+
+        <span>{{labels.email}}</span>
+        <input type="text" class="email_field ui-textfield">
+
+        <span>{{labels.phone}}</span>
+        <input type="text" class="phone_field ui-textfield" minlength="6" maxlength="12">
+
+        <span>{{labels.password}}</span>
+        <input type="password" class="password_field ui-textfield" minlength="6" maxlength="100">
+
+        <span>{{labels.repeat_password}}</span>
+        <input type="password" class="repeat_password_field ui-textfield" minlength="6" maxlength="100">
+
+        <div class="auth-register-submit ui-button">{{labels.register}}</div>
+
+        <div class="auth-register-login_link ui-link">
+            <img src="{% static 'icons/arrow_right.svg' %}">
+            <span>{{labels.login}}</span>
+        </div>
+    </div>
+</section>
+
+<script>
+    const API_AUTH_PATH = "{% url 'api_auth' %}",
+          HOME_PATH     = "{% url 'home' %}";
+</script>
+{% endblock %}

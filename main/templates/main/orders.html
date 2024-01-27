@@ -1,0 +1,68 @@
+{% extends "main/layout.html" %}
+
+{% load static %}
+
+{% block imports %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/account pages/account.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'main/account pages/item.css' %}">
+<script src="{% static 'main/account pages/item.js' %}"></script>
+{% endblock %}
+
+{% block title %}
+MobileWorld
+{% endblock %}
+
+{% block content %}
+<section id="main-section">
+    {% include 'main/parts/sidemenu.html' %}
+
+    <section id="items-section">
+        <div class="panel">
+            <div>
+                <b class="panel-title">{{sidemenu_labels.orders}}</b>
+                <span class="panel-count">(<span>{{orders|length}}</span> {{labels.items}})</span>
+            </div>
+        </div>
+
+        <div class="not_found_capture {% if not orders %}active{% endif %}">{{labels.not_found}}</div>
+
+        {% for order in orders %}
+        <div class="item" data-product_id="{{ order.product.id }}" data-id="{{ order.id }}">
+            <img src="{{ order.product.main_photo.url }}">
+
+            <div class="item-content">
+                <div class="item-content-first_block">
+                    <div class="item-name_and_color">
+                        <div class="item-name">{{ order.product.name }}</div>
+                        <div class="item-product_color">
+                            <span>{{labels.color}}:</span>
+                            <div style="--color: #{{order.color}};"></div>
+                        </div>
+                    </div>
+                    
+                    <b class="item-price">{{order.price_title}} $ <span>x {{order.quantity}}</span></b>
+                </div>
+
+                <div class="item-content-second_block">
+                    <span class="item-status">{{labels.status}}: <b style="--color: {{order.status_color}};">{{order.status_title}}</b></span>
+
+                    <div class="item-actions">
+                        <img class="item-actions-cancel ui-imgbutton {% if not order.is_can_cancel %}hide{% endif %}"
+                             src="{% static 'icons/close_black.svg' %}" alt="Cancel">
+
+                        <img class="item-actions-delete ui-imgbutton {% if not order.is_can_delete %}hide{% endif %}"
+                             src="{% static 'icons/trash.svg' %}" alt="Delete">
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </section>
+</section>
+<script>
+    const PRODUCT_PATH     = "{% url 'product' %}",
+          API_PRODUCT_PATH = "{% url 'api_product' %}",
+          CART_PATH        = "{% url 'cart' %}",
+          DELETE_ACTION    = 'order_remove';
+</script>
+{% endblock %}

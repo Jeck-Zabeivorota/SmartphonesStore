@@ -1,0 +1,13 @@
+/* History actions */
+
+.history-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 3vw;
+    margin-top: 4em;
+}
+
+.history-actions > b {
+    font-size: 1.2em;
+    color: rgba(var(--accent-color));
+}

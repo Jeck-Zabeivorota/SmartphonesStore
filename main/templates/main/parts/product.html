@@ -1,0 +1,37 @@
+{% load static %}
+
+<div class="product" data-product_id="{{product.id}}">
+    <div class="product-photo_wrap">
+        {% if product.discount > 0 %}
+        <span class="product-discount">{{product.get_discount}}</span>
+        {% endif %}
+        <img src="{{product.main_photo.url}}" alt="Photo">
+    </div>
+    <div class="product-actions">
+        {% if product.is_in_cart %}
+        <img class="product-actions-cart active" src="{% static 'icons/check.svg' %}" alt="Add to cart">
+        {% else %}
+        <img class="product-actions-cart" src="{% static 'icons/cart.svg' %}" alt="Add to cart">
+        {% endif %}
+        {% if product.is_favorite %}
+        <img class="product-actions-favorite active" src="{% static 'icons/favorite_active.svg' %}" alt="Add to favorite">
+        {% else %}
+        <img class="product-actions-favorite" src="{% static 'icons/favorite.svg' %}" alt="Add to favorite">
+        {% endif %}
+    </div>
+    <div class="product-name">{{product.name}}</div>
+    <div class="product-second">
+        <b>
+            {% if product.discount > 0 %}
+            {{ product.get_discount_price }} $
+            <span class="product-old-price">{{product.get_price}} $</span>
+            {% else %}
+            {{product.get_price}} $
+            {% endif %}
+        </b>
+        <div class="product-rating">
+            <img src="{% static 'icons/star.svg' %}" alt="Rating">
+            <span>{{product.get_rating}}/5</span>
+        </div>
+    </div>
+</div>

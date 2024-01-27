@@ -1,0 +1,24 @@
+.ui-chip {
+    cursor: pointer;
+    border-radius: 1em;
+    padding: 0.2em 1em;
+    border: 1px solid rgba(var(--text-color), 0.03);
+    transition: 0.2s ease-out;
+}
+
+.ui-chip:hover {
+    background-color: rgba(var(--text-color), 0.02);
+}
+
+.ui-chip:active {
+    transition: 50ms ease-out;
+    transform: scale(0.95);
+}
+
+.ui-chip.active {
+    background-color: rgba(var(--text-color), 0.03);
+}
+
+.ui-chip.active:hover {
+    background-color: rgba(var(--text-color), 0.06);
+}

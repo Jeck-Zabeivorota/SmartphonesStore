@@ -1,0 +1,26 @@
+#msg {
+    display: none;
+    align-items: center;
+    position: fixed;
+    width: fit-content;
+    top: 4em;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999;
+    border-radius: 0.5em;
+    border: 1px solid rgba(var(--main-color), 0.4);
+    color: rgb(var(--main-color));
+    background-color: rgba(var(--color), 0.8);
+    padding: 0.3em 1em;
+    backdrop-filter: blur(20px);
+    box-shadow: 0px 5px 15px rgba(var(--color), 0.1);
+}
+
+#msg .msg-close_button {
+    height: 1em;
+    margin-left: 1em;
+}
+
+#msg.active {
+    display: flex;
+}

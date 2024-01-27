@@ -1,0 +1,30 @@
+@font-face {
+    font-family: 'Ubuntu';
+    src: url('../fonts/Ubuntu-Regular.ttf');
+}
+
+:root {
+    --ratio: calc(1vw + 1vh);
+    --main-color: 255, 255, 255;
+    --accent-color: 0, 105, 165;
+    --text-color: 0, 0, 0;
+    --rating-color: 195, 190, 25;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Ubuntu, Arial, Helvetica, sans-serif;
+    font-size: 1em;
+    color: rgb(var(--text-color));
+    background-color: rgb(var(--main-color));
+}
+
+/* Positions */
+
+.pos-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

@@ -1,0 +1,77 @@
+{% extends "main/layout.html" %}
+
+{% load static %}
+
+{% block imports %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/account pages/account.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'main/account pages/item.css' %}">
+<script src="{% static 'main/account pages/item.js' %}"></script>
+{% endblock %}
+
+{% block title %}
+MobileWorld
+{% endblock %}
+
+{% block content %}
+<section id="main-section">
+    {% include 'main/parts/sidemenu.html' %}
+    
+    <section id="items-section">
+        <div class="panel">
+            <div>
+                <b class="panel-title">{{sidemenu_labels.browsed}}</b>
+                <span class="panel-count">(<span>{{browsed_products|length}}</span> {{labels.items}})</span>
+            </div>
+
+            <div class="panel-actions">
+                <span class="panel-actions-selected">(<span>0</span> {{labels.selected}})</span>
+                <img class="panel-actions-delete ui-imgbutton" src="{% static 'icons/trash.svg' %}" alt="Delete">
+                <img class="panel-actions-selector ui-imgbutton" src="{% static 'icons/select_all.svg' %}" alt="Select all">
+            </div>
+        </div>
+
+        <div class="not_found_capture {% if not browsed_products %}active{% endif %}">{{labels.not_found}}</div>
+
+        {% for browsed in browsed_products %}
+        <div class="item" data-product_id="{{ browsed.product.id }}" data-id="{{ browsed.id }}">
+            <div class="item-selector"></div>
+
+            <img src="{{ browsed.product.main_photo.url }}" alt="Photo">
+
+            <div class="item-content">
+                <div class="item-content-first_block">
+                    <div class="item-name">{{ browsed.product.name }}</div>
+                    <b class="item-price">{{browsed.product.get_discount_price}} $</b>
+                </div>
+
+                <div class="item-content-second_block">
+                    <div class="item-datetime"><span>{{labels.date_of_view}}: </span>{{browsed.get_datetime}}</div>
+
+                    <div class="item-actions">
+                        {% if browsed.product.is_in_cart %}
+                        <img class="item-actions-cart ui-imgbutton active" src="{% static 'icons/check.svg' %}" alt="Add to cart">
+                        {% else %}
+                        <img class="item-actions-cart ui-imgbutton" src="{% static 'icons/cart.svg' %}" alt="Add to cart">
+                        {% endif %}
+
+                        {% if browsed.product.is_favorite %}
+                        <img class="item-actions-favorite active ui-imgbutton" src="{% static 'icons/favorite_active.svg' %}" alt="Favorite">
+                        {% else %}
+                        <img class="item-actions-favorite ui-imgbutton" src="{% static 'icons/favorite.svg' %}" alt="Favorite">
+                        {% endif %}
+                        
+                        <img class="item-actions-delete ui-imgbutton" src="{% static 'icons/trash.svg' %}" alt="Delete">
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </section>
+</section>
+<script>
+    const PRODUCT_PATH     = "{% url 'product' %}",
+          API_PRODUCT_PATH = "{% url 'api_product' %}",
+          CART_PATH        = "{% url 'cart' %}",
+          DELETE_ACTION    = 'browsed_remove';
+</script>
+{% endblock %}

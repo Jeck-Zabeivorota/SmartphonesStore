@@ -1,0 +1,35 @@
+.ui-counter {
+    display: flex;
+    overflow: hidden;
+    border-radius: 1em;
+    background-color: rgba(var(--text-color), 0.03);
+}
+
+.ui-counter > input {
+    text-align: center;
+    border: none;
+    outline: none;
+    flex: 1;
+    width: 2em;
+    background-color: transparent;
+    font-size: 1em;
+    font-family: Ubuntu, Arial, Helvetica, sans-serif;
+}
+
+.ui-counter > * {
+    padding: 0.3em 0.8em;
+    transition: 0.2s ease-out;
+}
+
+.ui-counter > *:not(.ui-counter-value) {
+    cursor: pointer;
+}
+
+.ui-counter > *:hover:not(.ui-counter-value) {
+    background-color: rgba(var(--text-color), 0.04);
+}
+
+.ui-counter > *:active:not(.ui-counter-value) {
+    transition: 50ms ease-out;
+    background-color: rgba(var(--text-color), 0.08);
+}

@@ -1,0 +1,115 @@
+{% extends "main/layout.html" %}
+
+{% load static %}
+
+{% block imports %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/parts_product/product.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'main/products/products-section.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'main/products/history-section.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'base/ui/checkbox.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'base/ui/chip.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'base/ui/viewport.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'base/ui/select.css' %}">
+<script src="{% static 'base/ui/select.js' %}"></script>
+<script src="{% static 'main/products/products.js' %}"></script>
+<script src="{% static 'main/parts_product/product.js' %}"></script>
+{% endblock %}
+
+{% block title %}
+MobileWorld
+{% endblock %}
+
+{% block content %}
+<section id="products-section">
+    <div class="products-filters_container">
+        <div class="products-filters_block">
+            <b>{{labels.filters}}</b>
+            {% for category_name, category_fields in filters_data.items %}
+                <span>{{ category_name }}</span>
+
+                {% for field in category_fields %}
+                <div class="products-filter-field_filters ui-select" data-value="{{ field.field }}">
+                    <span class="toggler">{{ field.field_label }}<img src="{% static 'icons/arrow_down_black.svg' %}"></span>
+                    <div>
+                        {% for filter in field.filters %}
+                        <label class="ui-checkbox">
+                            <input type="checkbox" value="{{ filter.key }}">
+                            <div></div>
+                            {{ filter.label }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+                
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="products-mobil_filters_container">
+        <img class="products-mobil_filters-close" src="{% static 'icons/close_black.svg' %}">
+    </div>
+
+    <div class="products-products_block">
+        <div class="products-actions">
+            <input class="products-actions-filter ui-flatbutton" type="button" value="{{labels.filters}}">
+            <div class="products-actions-discount ui-chip">{{labels.discount}}</div>
+            <div class="products-actions-sort">
+                <span>{{labels.sort}}:</span>
+                <div class="ui-select" data-value="rating">
+                    <span><span>{{labels.by_rating}}</span><img src="{% static 'icons/arrow_down_black.svg' %}"></span>
+                    <div>
+                        <span class="ui-select-option" data-value="rating">{{labels.by_rating}}</span>
+                        <span class="ui-select-option" data-value="price_c2e">{{labels.from_c2e}}</span>
+                        <span class="ui-select-option" data-value="price_e2c">{{labels.from_e2c}}</span>
+                        <span class="ui-select-option" data-value="date">{{labels.by_date}}</span>
+                    </div>
+                </div>
+            </div>
+            <span class="products-actions-search">
+                {{labels.search}}: "<b></b>"
+                <img src="{% static 'icons/close_black.svg' %}">
+            </span>
+        </div>
+
+        <div class="products-capture {% if not products %}active{% endif %}">{{labels.not_found}}</div>
+        <div class="products-list">
+            {% for product in products %}
+            {% include 'main/parts/product.html' %}
+            {% endfor %}
+        </div>
+
+        <div class="product-pager"></div>
+    </div>
+</section>
+
+{% if user.is_authenticated and browsed_products %}
+<section id="history-section">
+    <div class="history-actions">
+        <b>{{labels.browsed}}</b>
+        <a href="{% url 'browsed_products' %}" class="ui-link">
+            <span>{{labels.all_history}}</span>
+            <img src="{% static 'icons/arrow_right.svg' %}">
+        </a>
+    </div>
+    <div class="ui-viewport">
+        <div>
+            {% for product in browsed_products %}
+            {% include 'main/parts/product.html' %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<script>
+    const PRODUCT_PATH      = "{% url 'product' %}",
+          API_PRODUCT_PATH  = "{% url 'api_product' %}",
+          AUTH_PATH         = "{% url 'auth' %}",
+          CART_PATH         = "{% url 'cart' %}",
+          API_PRODUCTS_PATH = "{% url 'api_products' %}";
+    
+    let activePage = parseInt('{{active_page}}'),
+        allPages   = parseInt('{{all_pages}}');
+</script>
+{% endblock %}

@@ -1,0 +1,37 @@
+#info-section {
+    margin-left: 10vw;
+}
+
+#info-section > b {
+    font-size: 1.5em;
+}
+
+#info-section > .form {
+    margin-top: 4em;
+}
+
+#info-section > .form > b {
+    display: block;
+    margin-bottom: 0.8em;
+}
+
+.info-capture {
+    padding: 0.5em 1em 0.5em 0;
+}
+
+#info-section > .form > input, .ui-button {
+    margin-top: 1.5em;
+}
+
+.ui-textfield {
+    width: 30vw;
+}
+
+@media (max-width: 700px) {
+    #info-section {
+        margin: 0;
+    }
+    .ui-textfield {
+        width: 60vw;
+    }
+}

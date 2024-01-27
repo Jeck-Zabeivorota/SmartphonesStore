@@ -1,0 +1,35 @@
+/* Order section */
+
+#order-section {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    flex-wrap: wrap;
+    z-index: 100;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    padding: 1em 0;
+    background-color: rgba(var(--main-color), 0.8);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(var(--text-color), 0.03);
+}
+
+.order-count {
+    font-size: 0.8em;
+    color: rgba(var(--text-color), 0.6);
+}
+
+.order-price {
+    font-size: 1.2em;
+    margin: 0 1em 0.2em 0;
+}
+
+.order-price > b {
+    color: rgb(var(--accent-color));
+}
+
+#futter {
+    padding-bottom: 6em;
+}

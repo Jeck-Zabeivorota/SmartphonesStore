@@ -1,0 +1,7 @@
+<section id="sidemenu-section">
+    <a href="{% url 'user_info' %}" class="{% if active_sidemenu_item == 'Info' %}active{% endif %}">{{sidemenu_labels.info}}</a>
+    <a href="{% url 'cart' %}" class="{% if active_sidemenu_item == 'Cart' %}active{% endif %}">{{sidemenu_labels.cart}}</a>
+    <a href="{% url 'orders' %}" class="{% if active_sidemenu_item == 'Orders' %}active{% endif %}">{{sidemenu_labels.orders}}</a>
+    <a href="{% url 'favorites' %}" class="{% if active_sidemenu_item == 'Favorites' %}active{% endif %}">{{sidemenu_labels.favorites}}</a>
+    <a href="{% url 'browsed_products' %}" class="{% if active_sidemenu_item == 'History' %}active{% endif %}">{{sidemenu_labels.browsed}}</a>
+</section>

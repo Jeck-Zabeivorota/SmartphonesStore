@@ -1,0 +1,68 @@
+{% extends "main/layout.html" %}
+
+{% load static %}
+
+{% block imports %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/account pages/account.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'main/account pages/item.css' %}">
+<script src="{% static 'main/account pages/item.js' %}"></script>
+{% endblock %}
+
+{% block title %}
+MobileWorld
+{% endblock %}
+
+{% block content %}
+<section id="main-section">
+    {% include 'main/parts/sidemenu.html' %}
+
+    <section id="items-section">
+        <div class="panel">
+            <div>
+                <b class="panel-title">{{sidemenu_labels.favorites}}</b>
+                <span class="panel-count">(<span>{{products|length}}</span> {{labels.items}})</span>
+            </div>
+
+            <div class="panel-actions">
+                <span class="panel-actions-selected">(<span>0</span> {{labels.selected}})</span>
+                <img class="panel-actions-delete ui-imgbutton" src="{% static 'icons/trash.svg' %}" alt="Delete">
+                <img class="panel-actions-selector ui-imgbutton" src="{% static 'icons/select_all.svg' %}" alt="Select all">
+            </div>
+        </div>
+
+        <div class="not_found_capture {% if not products %}active{% endif %}">{{labels.not_found}}</div>
+
+        {% for product in products %}
+        <div class="item" data-product_id="{{ product.id }}" data-id="{{ product.id }}">
+            <div class="item-selector"></div>
+
+            <img src="{{ product.main_photo.url }}">
+
+            <div class="item-content">
+                <div class="item-content-first_block">
+                    <div class="item-name">{{ product.name }}</div>
+                    <b class="item-price">{{product.get_discount_price}} $</b>
+                </div>
+                <div class="item-content-second_block">
+                    <div class="item-actions">
+                        {% if product.is_in_cart %}
+                        <img class="item-actions-cart ui-imgbutton active" src="{% static 'icons/check.svg' %}" alt="Add to cart">
+                        {% else %}
+                        <img class="item-actions-cart ui-imgbutton" src="{% static 'icons/cart.svg' %}" alt="Add to cart">
+                        {% endif %}
+
+                        <img class="item-actions-delete ui-imgbutton" src="{% static 'icons/trash.svg' %}" alt="Delete">
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </section>
+</section>
+<script>
+    const PRODUCT_PATH     = "{% url 'product' %}",
+          API_PRODUCT_PATH = "{% url 'api_product' %}",
+          CART_PATH        = "{% url 'cart' %}",
+          DELETE_ACTION    = 'favorite_remove';
+</script>
+{% endblock %}
