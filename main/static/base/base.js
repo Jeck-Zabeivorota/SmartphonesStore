@@ -48,11 +48,11 @@ function getURLParams(url) {
 */
 function jsonToURLParams(data) {
     return Object.keys(data).map((key) => {
-        const param = encodeURIComponent(key);
+        let param = encodeURIComponent(key);
 
         if (data[key] != null) {
             if (data[key] instanceof Array) {
-                const list = Object.values(data[key]).map((value) => encodeURIComponent(value));
+                const list = Object.values(data[key]).map(encodeURIComponent);
                 param = param.concat('=', list.join(','));
             }
             else param = param.concat('=', encodeURIComponent(data[key]));
@@ -115,7 +115,7 @@ function createHTMLElement(name, attributs=null, content=null) {
         for (let attr in attributs)
             element.setAttribute(attr, attributs[attr]);
     
-    element.innerHTML = content;
+    if (content != null) element.innerHTML = content;
 
     return element;
 }

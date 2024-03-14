@@ -1,5 +1,6 @@
 from typing import Union, Dict, Tuple, List, Any, Iterable
 from abc import ABC, abstractmethod
+from functools import lru_cache
 from django.db.models.query import QuerySet
 from django.db.models import Q
 from functools import reduce
@@ -20,7 +21,7 @@ class BaseFilters(ABC):
         pass
 
     @abstractmethod
-    def get_Q(self, keys:Tuple[str]) -> Union[Q, Tuple[Q]]:
+    def get_Q(self, keys:List[str]) -> Union[Q, Tuple[Q]]:
         'Returns Q parameter/parameters for filtering characteristic'
         pass
 
@@ -30,7 +31,7 @@ class BaseFilters(ABC):
 
 class Range():
     def __init__(self, lower:Union[int,float,None], upper:Union[int,float,None]):
-        if lower == None and upper == None:
+        if lower is None and upper is None:
             raise Exception('All bounds is None')
         
         self.lower = lower
@@ -49,6 +50,7 @@ class FilterRanges(BaseFilters):
         'en': 'Greater or equal to {}',
     }
 
+    @lru_cache(maxsize=None)
     def get_filters_data(self, lang:str) -> Dict[str, Union[str, List[Dict[str,str]] ]]:
         data = {
             'field': self.field,
@@ -56,7 +58,7 @@ class FilterRanges(BaseFilters):
             'filters': [],
         }
 
-        if self.endings == None or isinstance(self.endings, str):
+        if self.endings is None or isinstance(self.endings, str):
             ending = self.endings
         else:
             ending = self.endings[lang]
@@ -82,7 +84,7 @@ class FilterRanges(BaseFilters):
 
         return data
 
-    def get_Q(self, keys:Tuple[str]) -> Tuple[Q]:
+    def get_Q(self, keys:List[str]) -> Tuple[Q]:
         return tuple(Q(**self.params[key]) for key in self.params.keys() if key in keys)
 
     def __set_ranges_params__(self, ranges:Tuple[Range]):
@@ -131,22 +133,19 @@ class FilterChoices(BaseFilters):
         
         return data
 
-    def get_Q(self, keys:Tuple[str]) -> Q:
+    def get_Q(self, keys:List[str]) -> Q:
         valid_keys = tuple(key for key in self.keys if str(key) in keys)
         return Q(**{f'{self.field}__in': valid_keys})
 
     def __init__(self, field:str, choices:Tuple[Tuple[Any, str]], labels:Dict[str, Union[str, Dict[str,str]]]={}):
         super().__init__(field)
-        self.keys = tuple(choise[0] for choise in choices)
+        self.keys = set()
         self.__labels = {}
 
         for choice in choices:
             key = choice[0]
-
-            if key in labels:
-                self.__labels[key] = labels[key]
-            else:
-                self.__labels[key] = choice[1]
+            self.keys.add(key)
+            self.__labels[key] = labels[key] if key in labels else choice[1]
 
 __filters_data:Dict[str,BaseFilters] = {
     'manufacturer': FilterChoices(
@@ -412,12 +411,6 @@ def get_filtered_characteristics(filter_data:Dict[str,str]) -> QuerySet[Characte
     if not filter_data:
         return characteristics
 
-    if 'src' in filter_data:
-        characteristics = characteristics.filter(product__name__icontains=filter_data['src'])
-
-    if 'discount' in filter_data:
-        characteristics = characteristics.filter(product__discount__gt=0)
-
     filters = __filters_data
     Qs = []
 
@@ -439,6 +432,12 @@ def get_filtered_and_sort_products(data:Dict[str,str]) -> QuerySet[Product]:
     characteristics = get_filtered_characteristics(data)
     products = get_related_models(characteristics, Product, 'product')
     
+    if 'src' in data:
+        products = products.filter(name__icontains=data['src'])
+
+    if 'discount' in data:
+        products = products.filter(discount__gt=0)
+
     # Sort products
     sort = get(data, key='sort', default='rating')
     

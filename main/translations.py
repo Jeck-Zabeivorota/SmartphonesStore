@@ -1,4 +1,5 @@
 from typing import Dict
+from functools import lru_cache
 
 CHARACTERISTIC_CATEGORIES = {
     'main':         {'ua': 'Головне',           'en': 'Main'},
@@ -114,8 +115,8 @@ ORDER_STATUS = {
 def select_labels_by_lang(labels:Dict[str, Dict[str,str]], lang:str) -> Dict[str,str]:
     lang_labels = {}
 
-    for key in labels.keys():
-        lang_labels[key] = labels[key][lang]
+    for key, labels in labels.items():
+        lang_labels[key] = labels[lang]
 
     return lang_labels
 

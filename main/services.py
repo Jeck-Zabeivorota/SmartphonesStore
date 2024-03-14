@@ -41,8 +41,7 @@ class APIAuthActions:
 
     def login(request:HttpRequest, data:Dict[str,Any]):
         error = _check_params(data, email=str, password=str)
-        if error:
-            return error
+        if error: return error
 
         lang = get(request.COOKIES, key='lang', default='en')
         try:
@@ -59,13 +58,12 @@ class APIAuthActions:
 
     def register(request:HttpRequest, data:Dict[str,Any]):
         error = _check_params(data, name=str, email=str, phone=str, password=str, repeat_password=str)
-        if error:
-            return error
+        if error: return error
 
         name, email, phone = data['name'], data['email'].lower(), data['phone']
         password, repeat_password = data['password'], data['repeat_password']
 
-        if _xss_check(name) or _xss_check(email) or _xss_check(password):
+        if _xss_check(name) or _xss_check(email):
             return JsonResponse({'error': trsl.AUTH_MSG['invalid_value'][lang]}, status=400)
 
         lang = get(request.COOKIES, key='lang', default='en')

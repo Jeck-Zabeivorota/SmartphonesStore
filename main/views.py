@@ -1,4 +1,4 @@
-from typing import Union, Dict, Any, Type
+from typing import Union, Dict, Any, Type, Optional
 from abc import ABC
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout
@@ -21,7 +21,7 @@ class MenuItems(ABC):
     CART     = 'Cart'
 
     @staticmethod
-    def get_products_in_cart_count(user:models.User):
+    def get_products_in_cart_count(user:models.User) -> Optional[int]:
         return user.cart_products.count() if user.is_authenticated else None
     
 class SidemenuItems(ABC):
@@ -43,7 +43,7 @@ def __get_lang_and_layout_labels(request:HttpRequest):
     '''
 
     lang = get(request.COOKIES, key='lang', default='en')
-
+    
     if not lang in ('en', 'ua'):
         lang = 'en'
 
@@ -59,8 +59,8 @@ def index(request:HttpRequest):
         'name', 'main_photo', 'price', 'discount', 'avr_rating'
     )
 
-    models.Product.set_is_favorite(request.user, new_products, discount_products)
-    models.Product.set_is_in_cart(request.user, new_products, discount_products)
+    models.Product.set_is_favorite_attr(request.user, new_products, discount_products)
+    models.Product.set_is_in_cart_attr(request.user, new_products, discount_products)
     lang, layout_labels = __get_lang_and_layout_labels(request)
 
     context = {
@@ -95,8 +95,8 @@ def products(request:HttpRequest):
     else:
         browsed_products = tuple()
 
-    models.Product.set_is_favorite(user, products, browsed_products)
-    models.Product.set_is_in_cart(user, products, browsed_products)
+    models.Product.set_is_favorite_attr(user, products, browsed_products)
+    models.Product.set_is_in_cart_attr(user, products, browsed_products)
 
     # render view
     lang, layout_labels = __get_lang_and_layout_labels(request)
@@ -117,11 +117,13 @@ def products(request:HttpRequest):
     return render(request, 'main/products.html', context)
 
 def faq(request:HttpRequest):
-    shop_questions    = models.Question.objects.filter(category='shop').defer('category')
-    deliver_questions = models.Question.objects.filter(category='deliver').defer('category')
-    other_questions   = models.Question.objects.filter(category='other').defer('category')
-
     lang, layout_labels = __get_lang_and_layout_labels(request)
+
+    shop_questions    = models.Question.objects.filter(category='shop').only(f'question_{lang}', f'responce_{lang}')
+    deliver_questions = models.Question.objects.filter(category='deliver').only(f'question_{lang}', f'responce_{lang}')
+    other_questions   = models.Question.objects.filter(category='other').only(f'question_{lang}', f'responce_{lang}')
+
+    models.Question.set_question_and_responce_attr(lang, shop_questions, deliver_questions, other_questions)
 
     context = {
         'active_menu_item':  MenuItems.FAQ,
@@ -148,7 +150,7 @@ def product(request:HttpRequest):
         return redirect('home')
     
     # get feedbacks and check favorite
-    feedbacks = models.Feedback.objects.filter(product__id=product_id).order_by('-datetime');
+    feedbacks = models.Feedback.objects.filter(product__id=product_id).order_by('-datetime')
     feedbacks_count = feedbacks.count()
     user = request.user
     user_feedback = None
@@ -235,7 +237,7 @@ def cart(request:HttpRequest):
         'color', 'quantity',
         'product__name', 'product__main_photo', 'product__price', 'product__discount'
     )
-    models.Product.set_is_favorite(user, {'queryset': cart_products, 'field': 'product'})
+    models.Product.set_is_favorite_attr(user, {'queryset': cart_products, 'field': 'product'})
 
     lang, layout_labels = __get_lang_and_layout_labels(request)
 
@@ -263,7 +265,7 @@ def orders(request:HttpRequest):
     )
 
     lang, layout_labels = __get_lang_and_layout_labels(request)
-    models.Order.set_status_for_view(orders, lang)
+    models.Order.set_attrs_for_view(orders, lang)
 
     context = {
         'active_menu_item': MenuItems.ACCOUNT,
@@ -286,7 +288,7 @@ def favorites(request:HttpRequest):
     products = user.favorites.select_related('main_photo').only(
         'name', 'main_photo', 'price', 'discount'
     )
-    models.Product.set_is_in_cart(user, products)
+    models.Product.set_is_in_cart_attr(user, products)
 
     lang, layout_labels = __get_lang_and_layout_labels(request)
 
@@ -312,8 +314,8 @@ def browsed_products(request:HttpRequest):
         'datetime', 'product__name', 'product__main_photo', 'product__price', 'product__discount'
     )
     
-    models.Product.set_is_favorite(user, {'queryset': browsed_products, 'field': 'product'})
-    models.Product.set_is_in_cart(user, {'queryset': browsed_products, 'field': 'product'})
+    models.Product.set_is_favorite_attr(user, {'queryset': browsed_products, 'field': 'product'})
+    models.Product.set_is_in_cart_attr(user, {'queryset': browsed_products, 'field': 'product'})
 
     lang, layout_labels = __get_lang_and_layout_labels(request)
 
@@ -473,8 +475,8 @@ def api_products(request:HttpRequest):
 
     products = products.only('name', 'main_photo', 'price', 'discount', 'avr_rating')
 
-    models.Product.set_is_favorite(request.user, products)
-    models.Product.set_is_in_cart(request.user, products)
+    models.Product.set_is_favorite_attr(request.user, products)
+    models.Product.set_is_in_cart_attr(request.user, products)
 
     # create response
     response = {
@@ -516,7 +518,7 @@ def api_feedback(request:HttpRequest):
     
     # save feedback
     try:
-        feedback = models.Feedback.objects.defer().get(user__id=request.user.id)
+        feedback = models.Feedback.objects.defer().get(user=request.user)
     except ObjectDoesNotExist:
         feedback = models.Feedback(user=request.user, product=product)
 

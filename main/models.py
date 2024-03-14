@@ -38,25 +38,25 @@ class Product(models.Model):
         return self.date_of_issue.strftime('%d.%m.%Y')
 
     @staticmethod
-    def __set_field(field:str, ids:Iterable[int], colections:Union[Iterable, Dict[str, Union[str,Iterable]]]):
+    def __set_attr(attr:str, ids:Iterable[int], colections:Union[Iterable, Dict[str, Union[str,Iterable]]]):
         '''
         Sets a boolean value for the `field` attribute for products from `collections`,
         indicating whether the product's identifier belongs to the `ids` list.
 
         product.`field` = product.id in `ids`
         '''
-
+        
         for colection in colections:
             if isinstance(colection, dict):
                 for item in colection['queryset']:
                     product = getattr(item, colection['field'])
-                    setattr(product, field, product.id in ids)
+                    setattr(product, attr, product.id in ids)
             else:
                 for product in colection:
-                    setattr(product, field, product.id in ids)
+                    setattr(product, attr, product.id in ids)
 
     @staticmethod
-    def set_is_favorite(user, *colections:Union[Iterable,Dict[str, Union[str,Iterable]]]):
+    def set_is_favorite_attr(user, *colections:Union[Iterable,Dict[str, Union[str,Iterable]]]):
         '''
         Set the `is_favorite` attribute for products from `collections`,
         indicating whether the product is in the favorites of the `user`.
@@ -67,10 +67,10 @@ class Product(models.Model):
         else:
             ids = tuple()
         
-        Product.__set_field('is_favorite', ids, colections)
+        Product.__set_attr('is_favorite', ids, colections)
     
     @staticmethod
-    def set_is_in_cart(user, *colections:Union[Iterable,Dict[str, Union[str,Iterable]]]):
+    def set_is_in_cart_attr(user, *colections:Union[Iterable,Dict[str, Union[str,Iterable]]]):
         '''
         Set the `is_in_cart` attribute for products from `collections`,
         indicating whether the product is in the cart of the `user`.
@@ -81,7 +81,7 @@ class Product(models.Model):
         else:
             ids = tuple()
         
-        Product.__set_field('is_in_cart', ids, colections)
+        Product.__set_attr('is_in_cart', ids, colections)
 
     def __str__(self):
         return self.name
@@ -240,7 +240,7 @@ class Order(models.Model):
         return f'{(self.product_price * self.quantity):.2f}'.replace(',', '.')
 
     @staticmethod
-    def set_status_for_view(orders:Iterable, lang:str):
+    def set_attrs_for_view(orders:Iterable, lang:str):
         for order in orders:
             order.status_title = ORDER_STATUS[order.status][lang]
             order.status_color = Order.STATUS_COLORS[order.status]
@@ -284,9 +284,18 @@ class Question(models.Model):
         ('deliver', 'Deliver'),
         ('other',   'Other')
     )
-    question = models.CharField('Question', max_length=100)
     category = models.CharField('Category', max_length=10, choices=CATEGORY_CHOICES)
-    responce = models.CharField('Responce', max_length=500)
+    question_en = models.CharField('Question (en)', max_length=100)
+    question_ua = models.CharField('Question (ua)', max_length=100)
+    responce_en = models.CharField('Responce (en)', max_length=500)
+    responce_ua = models.CharField('Responce (ua)', max_length=500)
+
+    @staticmethod
+    def set_question_and_responce_attr(lang:str, *colections:Iterable):
+        for colection in colections:
+            for model in colection:
+                model.question = getattr(model, f'question_{lang}')
+                model.responce = getattr(model, f'responce_{lang}')
 
     def __str__(self):
-        return self.question
+        return self.question_en

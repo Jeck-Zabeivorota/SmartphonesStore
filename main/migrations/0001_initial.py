@@ -44,9 +44,11 @@ class Migration(migrations.Migration):
             name='Question',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('question', models.CharField(max_length=100, verbose_name='Question')),
+                ('question_en', models.CharField(max_length=100, verbose_name='Question (en)')),
+                ('question_ua', models.CharField(max_length=100, verbose_name='Question (ua)')),
                 ('category', models.CharField(choices=[('shop', 'Shop'), ('deliver', 'Deliver'), ('other', 'Other')], max_length=10, verbose_name='Category')),
-                ('responce', models.CharField(max_length=500, verbose_name='Responce')),
+                ('responce_en', models.CharField(max_length=500, verbose_name='Responce (en)')),
+                ('responce_ua', models.CharField(max_length=500, verbose_name='Responce (ua)')),
             ],
         ),
         migrations.CreateModel(

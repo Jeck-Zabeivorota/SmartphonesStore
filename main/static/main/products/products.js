@@ -134,9 +134,11 @@ function filtersEvents() {
 
 function searchEvent() {
     const search = document.querySelector('.products-actions-search');
+    const content = search.querySelector('b');
 
     search.querySelector('img').addEventListener('click', () => {
         search.classList.remove('active');
+        content.innerText = '';
         downloadProducts();
     });
 }
