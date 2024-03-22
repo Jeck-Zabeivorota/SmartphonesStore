@@ -174,7 +174,11 @@ AUTH_LABELS = {
     'phone':    {'ua': 'Телефон',    'en': 'Phone'},
     'email':    {'ua': 'Емаїл',      'en': 'Email'},
     'password': {'ua': 'Пароль',     'en': 'Password'},
-    'repeat_password': {'ua': 'Повторіть пароль', 'en': 'Repeat password'},
+    'repeat_password': {'ua': 'Повторіть пароль',   'en': 'Repeat password'},
+    'recovery':        {'ua': 'Відновлення паролю', 'en': 'Password recovery'},
+    'send_code':       {'ua': 'Надіслати код',      'en': 'Send code'},
+    'recovery_code':   {'ua': 'Код відновлення',    'en': 'Recovery code'},
+    'change_pass':     {'ua': 'Змінити пароль',     'en': 'Change password'},
 }
 
 PRODUCTS_LABELS = {
@@ -250,7 +254,7 @@ ITEMS_LABELS = {
     'not_found':      {'ua': 'Товари не знайдені', 'en': 'Products not found'},
     'color':          {'ua': 'Колір',              'en': 'Color'},
     'total':          {'ua': 'Всього',             'en': 'Total'},
-    'selected_title': {'ua': 'товрів вибрано',     'en': 'products selected'},
+    'selected_title': {'ua': 'товарів вибрано',    'en': 'products selected'},
     'order':          {'ua': 'Замовити',           'en': 'Order'},
     'status':         {'ua': 'статус',             'en': 'status'},
     'date_of_view':   {'ua': 'Дата перегляду',     'en': 'Date of view'},
@@ -261,7 +265,6 @@ AUTH_MSG = {
     'invalid_value':      {'ua': 'Введено не допустиме значення',         'en': 'Entered invalid value'},
     'email_not_found':    {'ua': 'Користувача з таким email не знайдено', 'en': 'User with this email was not found'},
     'incorrect_password': {'ua': 'Невірний пароль',                       'en': 'Incorrect password'},
-    'user_is_auth':       {'ua': 'Користувач автентифікований',           'en': 'User is authenticated'},
     'name_out_of_range':  {
         'ua': "Ім'я повинне містити від 3 до 20 символів",
         'en': 'The name must contain from 3 to 20 characters'
@@ -277,8 +280,20 @@ AUTH_MSG = {
         'ua': 'Пароль повинен містити від 6 до 100 символів',
         'en': 'The password must contain from 6 to 100 characters'
     },
-    'user_registered':    {'ua': 'Користувача зараєстровано',             'en': 'User is registered'},
     'password_mismatch':  {'ua': 'Паролі не збіглися',                    'en': 'Password mismatch'},
+    'recovery_subject':   {'ua': 'MobilWorld: Відновлення паролю',        'en': 'MobilWorld: Password recovery'},
+    'recovery_message':   {'ua': 'Код для відновлення паролю: ',          'en': 'Code for password recovery: '},
+    'sending_error':      {
+        'ua': 'Помилка при відправці коду, спробуйте пізніше',
+        'en': 'There was an error sending the code, please try again later'
+    },
+    'code_sent':          {'ua': 'Код відправлено на пошту',              'en': 'Code has been sent to the mail'},
+    'code_not_found':     {'ua': 'Код не був надісланий',                 'en': 'Code was not sent'},
+    'incorrect_code':     {'ua': 'Невірний код. Залишилось спроб: ',      'en': 'Invalid code. Remaining attempts: '},
+    'request_new_code':   {
+        'ua': 'Невірний код, здійсніть запит на новий код',
+        'en': 'Invalid code, request a new code'
+    },
 }
 
 USER_DATA_MSG = {
@@ -299,13 +314,16 @@ USER_DATA_MSG = {
 }
 
 PRODUCTS_MSG = {
-    'favorites_add': {'ua': 'Додано до улюблених', 'en': 'Added to favorites'},
+    'favorites_add':    {'ua': 'Додано до улюблених',            'en': 'Added to favorites'},
     'favorites_remove': {'ua': ' товарів видалено із улюблених', 'en': ' products removed from favorites'},
-    'cart_add': {'ua': 'Додано до кошика', 'en': 'Added to cart'},
-    'cart_remove': {'ua': ' товарів видалено із кошика', 'en': ' products removed from cart'},
-    'orders_add': {'ua': 'Замовлення створено', 'en': 'Order is created'},
-    'orders_cancel': {'ua': ' замовлень скасовано', 'en': ' orders canceled'},
-    'orders_remove': {'ua': ' замовлень видалено', 'en': ' orders removed'},
-    'browsed_remove': {'ua': ' товарів видалено із переглянутих товарів', 'en': ' products removed from browsed products'},
-    'feedback_saved': {'ua': 'Відгук збережено', 'en': 'Feedback saved'},
+    'cart_add':         {'ua': 'Додано до кошика',               'en': 'Added to cart'},
+    'cart_remove':      {'ua': ' товарів видалено із кошика',    'en': ' products removed from cart'},
+    'orders_add':       {'ua': 'Замовлення створено',            'en': 'Order is created'},
+    'orders_cancel':    {'ua': ' замовлень скасовано',           'en': ' orders canceled'},
+    'orders_remove':    {'ua': ' замовлень видалено',            'en': ' orders removed'},
+    'browsed_remove':   {
+        'ua': ' товарів видалено із переглянутих товарів',
+        'en': ' products removed from browsed products'
+    },
+    'feedback_saved':   {'ua': 'Відгук збережено',               'en': 'Feedback saved'},
 }

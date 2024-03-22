@@ -85,8 +85,16 @@
     display: flex;
 }
 
-.auth-register-login_link > img {
+.auth-register > .login_link > img,
+.auth-send_code > .login_link > img,
+.auth-change_pass > .login_link > img
+{
     transform: rotate(180deg);
+}
+
+.recovery_link {
+    display: inline-block;
+    margin-bottom: 0.7em;
 }
 
 @keyframes animate-ring {

@@ -398,6 +398,12 @@ def api_auth(request:HttpRequest):
     elif data['action'] == 'register':
         return APIAuthActions.register(request, data)
 
+    elif data['action'] == 'send_code':
+        return APIAuthActions.send_code(request, data)
+
+    elif data['action'] == 'change_password':
+        return APIAuthActions.change_password(request, data)
+
     return JsonResponse({'error': 'Incorrect parameter "action"'}, status=400)
 
 def api_user_data(request:HttpRequest):

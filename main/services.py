@@ -1,8 +1,12 @@
 from typing import Dict, Any
+from abc import ABC
+from random import randint
 from django.contrib.auth import login
 from django.http import JsonResponse, HttpRequest
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.validators import validate_email
+from django.core.cache import cache
+from django.core.mail import send_mail
 from datetime import datetime
 from .tools import get
 from . import models
@@ -23,22 +27,22 @@ def _check_params(data:Dict[str,Any], **params:type):
 
     return None
 
-def _xss_check(text:str):
+def _is_xss(text:str) -> bool:
     'Return `True` if the `text` contains script or style tags. Otherwise return `False`.'
 
     text = text.lower()
-    if text.find('<script') != -1 or text.find('<style') != -1:
-        return True
-    return False
+    return text.find('<script') != -1 or text.find('<style') != -1
 
-class APIAuthActions:
-    def is_valid_email(email:str):
+class APIAuthActions(ABC):
+    @staticmethod
+    def __is_valid_email(email:str) -> bool:
         try:
             validate_email(email)
             return True
         except ValidationError:
             return False
 
+    @staticmethod
     def login(request:HttpRequest, data:Dict[str,Any]):
         error = _check_params(data, email=str, password=str)
         if error: return error
@@ -54,16 +58,17 @@ class APIAuthActions:
 
         login(request, user)
 
-        return JsonResponse({'message': trsl.AUTH_MSG['user_is_auth'][lang]})
+        return JsonResponse({'message': 'User is authenticated'})
 
-    def register(request:HttpRequest, data:Dict[str,Any]):
+    @classmethod
+    def register(cls, request:HttpRequest, data:Dict[str,Any]):
         error = _check_params(data, name=str, email=str, phone=str, password=str, repeat_password=str)
         if error: return error
 
         name, email, phone = data['name'], data['email'].lower(), data['phone']
         password, repeat_password = data['password'], data['repeat_password']
 
-        if _xss_check(name) or _xss_check(email):
+        if _is_xss(name) or _is_xss(email):
             return JsonResponse({'error': trsl.AUTH_MSG['invalid_value'][lang]}, status=400)
 
         lang = get(request.COOKIES, key='lang', default='en')
@@ -71,7 +76,7 @@ class APIAuthActions:
         if len(name) < 3 or len(name) > 20:
             return JsonResponse({'error': trsl.AUTH_MSG['name_out_of_range'][lang]}, status=400)
 
-        if not APIAuthActions.is_valid_email(email):
+        if not cls.__is_valid_email(email):
             return JsonResponse({'error': trsl.AUTH_MSG['incorrect_email'][lang]}, status=400)
         
         if models.User.objects.filter(email=email).exists():
@@ -99,23 +104,92 @@ class APIAuthActions:
         user.save()
         login(request, user)
 
-        return JsonResponse({'message': trsl.AUTH_MSG['user_registered'][lang]})
+        return JsonResponse({'message': 'User is registered'})
 
-class APIUserDataActions:
-    def change_info(user:models.User, data:Dict[str,Any], lang:str):
+    @staticmethod
+    def send_code(request:HttpRequest, data:Dict[str,Any]):
+        error = _check_params(data, email=str)
+        if error: return error
+
+        lang = get(request.COOKIES, key='lang', default='en')
+        email = data['email'].lower()
+
+        if not models.User.objects.filter(email=email).exists():
+            return JsonResponse({'error': trsl.AUTH_MSG['email_not_found'][lang]}, status=404)
+
+        code = f'{randint(0, 999_999):0>6}'
+
+        try:
+            send_mail(
+                trsl.AUTH_MSG['recovery_subject'][lang],
+                trsl.AUTH_MSG['recovery_message'][lang] + code,
+                None, [email]
+            )
+        except:
+            return JsonResponse({'error': trsl.AUTH_MSG['sending_error'][lang]}, status=502)
+
+        cache.set(f'recovery_{email}', (code, 3), 3600)
+
+        return JsonResponse({'message': trsl.AUTH_MSG['code_sent'][lang]})
+
+    @staticmethod
+    def change_password(request:HttpRequest, data:Dict[str,Any]):
+        error = _check_params(data, email=str, code=str, password=str, repeat_password=str)
+        if error: return error
+
+        lang = get(request.COOKIES, key='lang', default='en')
+        email, code = data['email'].lower(), data['code']
+
+        try:
+            user = models.User.objects.defer().get(email=email)
+        except ObjectDoesNotExist:
+            return JsonResponse({'error': trsl.AUTH_MSG['email_not_found'][lang]}, status=404)
+        
+        code_key = f'recovery_{email}'
+        if not cache.has_key(code_key):
+            return JsonResponse({'error': trsl.AUTH_MSG['code_not_found'][lang]}, status=404)
+        
+        curr_code, attempts = cache.get(code_key)
+
+        if curr_code != code:
+            attempts -= 1
+            if attempts > 0:
+                cache.set(code_key, (curr_code, attempts))
+                return JsonResponse({'error': trsl.AUTH_MSG['incorrect_code'][lang] + str(attempts)}, status=400)
+            else:
+                cache.delete(code_key)
+                return JsonResponse({'error': trsl.AUTH_MSG['request_new_code'][lang]}, status=400)
+        
+        password, repeat_password = data['password'], data['repeat_password']
+
+        if len(password) < 7 or len(password) > 100:
+            return JsonResponse({'error': trsl.AUTH_MSG['password_out_of_range'][lang]}, status=400)
+        
+        if password != repeat_password:
+            return JsonResponse({'error': trsl.AUTH_MSG['password_mismatch'][lang]}, status=400)
+
+        cache.delete(code_key)
+        user.set_password(password)
+        user.save(update_fields=('password',))
+        login(request, user)
+
+        return JsonResponse({'message': 'Password reset'})
+
+class APIUserDataActions(ABC):
+    @classmethod
+    def change_info(cls, user:models.User, data:Dict[str,Any], lang:str):
         error = _check_params(data, name=str, email=str, phone=str)
-        if error:
-            return error
+        if error: return error
         
         name, email, phone = data['name'], data['email'].lower(), data['phone']
 
-        if _xss_check(name) or _xss_check(email):
+        if _is_xss(name) or _is_xss(email):
             return JsonResponse({'error': trsl.AUTH_MSG['invalid_value'][lang]}, status=400)
 
         if len(name) < 3 or len(name) > 20:
             return JsonResponse({'error': trsl.AUTH_MSG['name_out_of_range'][lang]}, status=400)
 
-        if not APIAuthActions.is_valid_email(email):
+        if not cls.__is_valid_email(email):
             return JsonResponse({'error': trsl.AUTH_MSG['incorrect_email'][lang]}, status=400)
 
         if models.User.objects.filter(email=email).exclude(id=user.id).exists():
@@ -129,17 +203,14 @@ class APIUserDataActions:
 
         return JsonResponse({'message': trsl.USER_DATA_MSG['info_saved'][lang]})
 
+    @staticmethod
     def change_password(request:HttpRequest, user:models.User, data:Dict[str,Any], lang:str):
         error = _check_params(data, current_password=str, new_password=str, repeat_password=str)
-        if error:
-            return error
+        if error: return error
         
         curr_pass   = data['current_password']
         new_pass    = data['new_password']
         repeat_pass = data['repeat_password']
-
-        if _xss_check(new_pass):
-            return JsonResponse({'error': trsl.AUTH_MSG['invalid_value'][lang]}, status=400)
 
         if not user.check_password(curr_pass):
             return JsonResponse({'error': trsl.AUTH_MSG['incorrect_password'][lang]}, status=400)
@@ -152,18 +223,17 @@ class APIUserDataActions:
 
         user.set_password(new_pass)
         user.save(update_fields=('password',))
-        login(request, user)
 
         return JsonResponse({'message': trsl.USER_DATA_MSG['password_saved'][lang]})
     
+    @staticmethod
     def change_address(user:models.User, data:Dict[str,Any], lang:str):
         error = _check_params(data, city=str, street=str, index=str)
-        if error:
-            return error
+        if error: return error
         
         city, street, index = data['city'], data['street'], data['index']
 
-        if _xss_check(city) or _xss_check(street):
+        if _is_xss(city) or _is_xss(street):
             return JsonResponse({'error': trsl.AUTH_MSG['invalid_value'][lang]}, status=400)
 
         if not city or not street or not index:
@@ -188,11 +258,11 @@ class APIUserDataActions:
 
         return JsonResponse({'message': trsl.USER_DATA_MSG['address_saved'][lang]})
 
-class APIProductActions:
+class APIProductActions(ABC):
+    @staticmethod
     def favorite_add(user:models.User, data:Dict[str,Any], lang:str):
         error = _check_params(data, product_id=int)
-        if error:
-            return error
+        if error: return error
         
         try:
             product = models.Product.objects.defer().get(id=data['product_id'])
@@ -205,10 +275,10 @@ class APIProductActions:
             'count': user.favorites.count(),
         })
 
+    @staticmethod
     def favorite_remove(user:models.User, data:Dict[str,Any], lang:str):
         error = _check_params(data, ids=list)
-        if error:
-            return error
+        if error: return error
 
         for i in data['ids']:
             if not isinstance(i, int):
@@ -223,10 +293,10 @@ class APIProductActions:
             'count': user.favorites.count(),
         })
 
+    @staticmethod
     def cart_add(user:models.User, data:Dict[str,Any], lang:str):
         error = _check_params(data, product_id=int, color=str, quantity=int)
-        if error:
-            return error
+        if error: return error
 
         try:
             product = models.Product.objects.only('quantity').get(id=data['product_id'])
@@ -254,10 +324,10 @@ class APIProductActions:
             'count': user.cart_products.count(),
         })
 
+    @staticmethod
     def cart_remove(user:models.User, data:Dict[str,Any], lang:str):
         error = _check_params(data, ids=list)
-        if error:
-            return error
+        if error: return error
 
         for i in data['ids']:
             if not isinstance(i, int):
@@ -270,10 +340,10 @@ class APIProductActions:
             'count': user.cart_products.count(),
         })
 
+    @staticmethod
     def cart_quantity(user:models.User, data:Dict[str,Any]):
         error = _check_params(data, cart_product_id=int, value=int)
-        if error:
-            return error
+        if error: return error
         
         try:
             cart_product = models.CartProduct.objects.select_related('product').only(
@@ -290,13 +360,13 @@ class APIProductActions:
 
         return JsonResponse({'message': 'Quantity is update'})
 
+    @staticmethod
     def order_add(user:models.User, data:Dict[str,Any], lang:str):
         if not user.address:
             return JsonResponse({'error': f'Indicate your delivery address'}, status=401)
 
         error = _check_params(data, color=str, quantity=int)
-        if error:
-            return error
+        if error: return error
 
         if 'cart_product_id' in data:
             if not isinstance(data['cart_product_id'], int):
@@ -352,10 +422,10 @@ class APIProductActions:
         
         return JsonResponse(response)
 
+    @staticmethod
     def order_cancel(user:models.User, data:Dict[str,Any], lang:str):
         error = _check_params(data, ids=list)
-        if error:
-            return error
+        if error: return error
 
         for i in data['ids']:
             if not isinstance(i, int):
@@ -370,10 +440,10 @@ class APIProductActions:
             'count': user.orders.count(),
         })
 
+    @staticmethod
     def order_remove(user:models.User, data:Dict[str,Any], lang:str):
         error = _check_params(data, ids=list)
-        if error:
-            return error
+        if error: return error
 
         for i in data['ids']:
             if not isinstance(i, int):
@@ -386,10 +456,10 @@ class APIProductActions:
             'count': user.orders.count(),
         })
 
+    @staticmethod
     def browsed_remove(user:models.User, data:Dict[str,Any], lang:str):
         error = _check_params(data, ids=list)
-        if error:
-            return error
+        if error: return error
         
         for i in data['ids']:
             if not isinstance(i, int):

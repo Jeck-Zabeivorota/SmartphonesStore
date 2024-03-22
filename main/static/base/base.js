@@ -76,12 +76,12 @@ function ajax({url, method, headers=null, data=null, success=null, error=null}) 
 
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
-            if (xhr.status == 200)
+            if (xhr.status < 300)
                 success?.(JSON.parse(xhr.responseText));
             else if (xhr.status == 500)
-                error?.(xhr, xhr.status, {error: 'Server error'})
-            else 
-                error?.(xhr, xhr.status, JSON.parse(xhr.responseText))
+                error?.(xhr, xhr.status, {error: 'Server error'});
+            else if (xhr.status >= 400)
+                error?.(xhr, xhr.status, JSON.parse(xhr.responseText));
         }
     };
 
@@ -133,7 +133,7 @@ function showMsg(message, type) {
         warning: '210, 180, 55',
     }
     const msg = document.getElementById('msg');
-    msg.querySelector('.msg-content').textContent = message;
+    msg.querySelector('.msg-content').innerHTML = message;
     msg.style.setProperty('--color', colors[type]);
     msg.classList.add('active');
 }
